@@ -16,14 +16,15 @@ namespace Application.Features.ForecastFeatures.Commands
 
         public class UpdateForecastCommandHandler : IRequestHandler<UpdateForecastCommand, int>
         {
-            private readonly IApplicationDbContext _context;
-            public UpdateForecastCommandHandler(IApplicationDbContext context)
+            private readonly IWeatherForecastRepository _weatherForecastRepository;
+            public UpdateForecastCommandHandler(IWeatherForecastRepository weatherForecastRepository)
             {
-                _context = context;
+                _weatherForecastRepository = weatherForecastRepository;
             }
+
             public async Task<int> Handle(UpdateForecastCommand command, CancellationToken cancellationToken)
             {
-                var weatherForecast = _context.WeatherForecasts.Where(a => a.Id == command.Id).FirstOrDefault();
+                var weatherForecast = await _weatherForecastRepository.GetWeatherForecastByIdAsync(command.Id);
 
                 if (weatherForecast == null)
                 {
@@ -32,7 +33,7 @@ namespace Application.Features.ForecastFeatures.Commands
                 else
                 {
                     weatherForecast.Temperature = command.Temperature;
-                    await _context.SaveChangesAsync();
+                    await _weatherForecastRepository.AddAsync(weatherForecast);
                     return weatherForecast.Id;
                 }
             }

@@ -14,19 +14,19 @@ namespace Application.Features.ForecastFeatures.Queries
     {
         public class GetAllForecastsQueryHandler : IRequestHandler<GetAllForecastsQuery, IEnumerable<WeatherForecast>>
         {
-            private readonly IApplicationDbContext _context;
-            public GetAllForecastsQueryHandler(IApplicationDbContext context)
+            private readonly IWeatherForecastRepository _weatherForecastRepository;
+            public GetAllForecastsQueryHandler(IWeatherForecastRepository weatherForecastRepository)
             {
-                _context = context;
+                _weatherForecastRepository = weatherForecastRepository;
             }
             public async Task<IEnumerable<WeatherForecast>> Handle(GetAllForecastsQuery query, CancellationToken cancellationToken)
             {
-                var weatherForecastList = await _context.WeatherForecasts.ToListAsync();
+                var weatherForecastList = await _weatherForecastRepository.GetAllAsync();
                 if (weatherForecastList == null)
                 {
                     return null;
                 }
-                return weatherForecastList.AsReadOnly();
+                return weatherForecastList;
             }
         }
     }

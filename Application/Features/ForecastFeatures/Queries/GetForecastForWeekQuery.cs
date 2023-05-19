@@ -13,10 +13,10 @@ namespace Application.Features.ForecastFeatures.Queries
         public int WeekSelection { get; set; }
         public class GetForecastForWeekQueryHandler : IRequestHandler<GetForecastForWeekQuery, IEnumerable<WeatherForecastResponse>>
         {
-            private readonly IApplicationDbContext _context;
-            public GetForecastForWeekQueryHandler(IApplicationDbContext context)
+            private readonly IWeatherForecastRepository _weatherForecastRepository;
+            public GetForecastForWeekQueryHandler(IWeatherForecastRepository weatherForecastRepository)
             {
-                _context = context;
+                _weatherForecastRepository = weatherForecastRepository;
             }
 
             public async Task<IEnumerable<WeatherForecastResponse>> Handle(GetForecastForWeekQuery query, CancellationToken cancellationToken)
@@ -34,7 +34,7 @@ namespace Application.Features.ForecastFeatures.Queries
                     endDate = beginDate.AddDays(6);
                 }
 
-                var weatherForecastResponseQuery = from forecast in _context.WeatherForecasts.Where(a => a.ForDate >= beginDate && a.ForDate <= endDate).OrderBy(x => x.ForDate)
+                var weatherForecastResponseQuery = from forecast in _weatherForecastRepository.GetWeatherForecastsByDateRange(beginDate, endDate)
                                        select new WeatherForecastResponse
                                        {
                                            ForDate = forecast.ForDate,

@@ -15,14 +15,14 @@ namespace Application.Features.ForecastFeatures.Queries
         public int Id { get; set; }
         public class GetForecastByIdQueryHandler : IRequestHandler<GetForecastByIdQuery, WeatherForecast>
         {
-            private readonly IApplicationDbContext _context;
-            public GetForecastByIdQueryHandler(IApplicationDbContext context)
+            private readonly IWeatherForecastRepository _weatherForecastRepository;
+            public GetForecastByIdQueryHandler(IWeatherForecastRepository weatherForecastRepository)
             {
-                _context = context;
+                _weatherForecastRepository = weatherForecastRepository;
             }
             public async Task<WeatherForecast> Handle(GetForecastByIdQuery query, CancellationToken cancellationToken)
             {
-                var weatherForecast = _context.WeatherForecasts.Where(a => a.Id == query.Id).FirstOrDefault();
+                var weatherForecast = await _weatherForecastRepository.GetWeatherForecastByIdAsync(query.Id);
                 return weatherForecast;
             }
         }

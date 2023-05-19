@@ -9,17 +9,16 @@ namespace Application.Features.ForecastFeatures.Commands
         public int Id { get; set; }
         public class DeleteForecastByIdCommandHandler : IRequestHandler<DeleteForecastByIdCommand, int>
         {
-            private readonly IApplicationDbContext _context;
-            public DeleteForecastByIdCommandHandler(IApplicationDbContext context)
+            private readonly IWeatherForecastRepository _weatherForecastRepository;
+            public DeleteForecastByIdCommandHandler(IWeatherForecastRepository weatherForecastRepository)
             {
-                _context = context;
+                _weatherForecastRepository = weatherForecastRepository;
             }
             public async Task<int> Handle(DeleteForecastByIdCommand command, CancellationToken cancellationToken)
             {
-                var weatherForecast = await _context.WeatherForecasts.Where(a => a.Id == command.Id).FirstOrDefaultAsync();
+                var weatherForecast = await _weatherForecastRepository.GetWeatherForecastByIdAsync(command.Id);
                 if (weatherForecast == null) return default;
-                _context.WeatherForecasts.Remove(weatherForecast);
-                await _context.SaveChangesAsync();
+                await _weatherForecastRepository.DeleteAsync(weatherForecast);
                 return weatherForecast.Id;
             }
         }

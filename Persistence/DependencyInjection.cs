@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.Context;
+using Persistence.Repositories;
 
 namespace Persistence
 {
@@ -14,6 +15,8 @@ namespace Persistence
                     ServiceLifetime.Transient);
 
             services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
+            services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddTransient<IWeatherForecastRepository, WeatherForecastRepository>();
         }
     }
 }

@@ -12,11 +12,12 @@ namespace Application.Features.ForecastFeatures.Commands
 
         public class CreateForecastCommandHandler : IRequestHandler<CreateForecastCommand, int>
         {
-            private readonly IApplicationDbContext _context;
-            public CreateForecastCommandHandler(IApplicationDbContext context)
+            private readonly IWeatherForecastRepository _weatherForecastRepository;
+            public CreateForecastCommandHandler(IWeatherForecastRepository weatherForecastRepository)
             {
-                _context = context;
+                _weatherForecastRepository = weatherForecastRepository;
             }
+
             public async Task<int> Handle(CreateForecastCommand command, CancellationToken cancellationToken)
             {
                 if(command.Temperature > 60)
@@ -28,7 +29,7 @@ namespace Application.Features.ForecastFeatures.Commands
                 if (command.ForDate < DateTime.Today)
                     throw new PastEntryException(command.ForDate.ToString("dd/MM/yyyy"));
 
-                var exisitingRecord = _context.WeatherForecasts.Where(x => x.ForDate == command.ForDate.Date).FirstOrDefault();
+                var exisitingRecord = await _weatherForecastRepository.GetWeatherForecastByDateAsync(command.ForDate);
                 if(exisitingRecord != null)
                     throw new AlreadyExistingForecastException(command.ForDate.Date.ToString("dd/MM/yyyy"));
 
@@ -36,8 +37,7 @@ namespace Application.Features.ForecastFeatures.Commands
                 weatherForecast.Temperature = command.Temperature;
                 weatherForecast.ForDate = command.ForDate.Date;
                 weatherForecast.CreateDate = DateTime.Now;
-                _context.WeatherForecasts.Add(weatherForecast);
-                await _context.SaveChangesAsync();
+                await _weatherForecastRepository.AddAsync(weatherForecast);
                 return weatherForecast.Id;
             }
         }
