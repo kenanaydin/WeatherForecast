@@ -2,9 +2,9 @@ version: '3.4'
 
 services:
   webapi:
-    image: ${DOCKER_REGISTRY-}webapi
+    image: weatherforecast-webapi
     build:
       context: .
-      dockerfile: WebApi/Dockerfile
+      dockerfile: Dockerfile
     ports:
-       - "6000:6000"
+       - "5236:5236"
