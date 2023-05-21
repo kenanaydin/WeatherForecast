@@ -27,7 +27,7 @@ I have used technologies below in this project
    docker compose up
    ```
 
-   # Usage
+# Usage
 
   You can get the Postman collection to test them by importing the exported collection. Please use below URL to download Postman collection; 
 
